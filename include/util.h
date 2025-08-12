@@ -26,6 +26,7 @@ if (!(__comparison)) {   \
 }
 
 
+
 #define exit_error(massage__) \
 do {    \
     printf("\nError in file %s, on line %d, massage: %s;\n", __FILE__, __LINE__, massage__),\

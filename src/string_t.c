@@ -286,7 +286,7 @@ String strreplace(String dest, String old, String new, int count) {
 
 uint64_t fsize(String fname) {
 
-    if (name == NULL) return 0;
+    if (fname == NULL) return 0;
 
     FILE* f = fopen(fname, "rb");
     
@@ -302,7 +302,7 @@ uint64_t fsize(String fname) {
 
 uint64_t fmaxline(String fname) {
 
-    if (name == NULL) return 0;
+    if (fname == NULL) return 0;
 
     FILE* f = fopen(fname, "rb");
     
@@ -327,7 +327,7 @@ uint64_t fmaxline(String fname) {
 
 String freadall(String fname) {
 
-    if (name == NULL) return 0;
+    if (fname == NULL) return 0;
 
     FILE* f = fopen(fname, "rb");
     

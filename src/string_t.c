@@ -320,7 +320,7 @@ uint64_t fmaxline(String fname) {
             temp = 0;
         }
     }
-
+    count = (count > temp) ? count : temp;
     fclose(f);
     return count;
 };

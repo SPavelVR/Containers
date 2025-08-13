@@ -13,6 +13,8 @@ typedef char* String;
 
 #include <stddef.h>
 #include <string.h>
+#include <stdio.h>
+#include <stdint.h>
 
 
 // ОБЪЯВЛЕНИЯ ФУНКЦИЙ
@@ -37,6 +39,12 @@ size_t strcount(String dest, String source);
 int streql(String str1, String str2);
 
 String strreplace(String dest, String old, String new, int count);
+
+uint64_t fsize(String fname);
+
+String freadall(String fname);
+
+uint64_t fmaxline(String fname);
 
 
 #ifdef __cplusplus

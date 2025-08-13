@@ -283,3 +283,72 @@ String strreplace(String dest, String old, String new, int count) {
     return start_rs;
 
 };
+
+uint64_t fsize(String fname) {
+
+    if (name == NULL) return 0;
+
+    FILE* f = fopen(fname, "rb");
+    
+    if (f == NULL) return 0;
+
+    uint64_t count = 0;
+
+    while (fgetc(f) != EOF) count++;
+
+    fclose(f);
+    return count;
+};
+
+uint64_t fmaxline(String fname) {
+
+    if (name == NULL) return 0;
+
+    FILE* f = fopen(fname, "rb");
+    
+    if (f == NULL) return 0;
+
+    uint64_t count = 0;
+    uint64_t temp = 0;
+
+    char c;
+    while ((c = fgetc(f)) != EOF) {
+
+        if (c != '\n' || c != '\0') temp++;
+        else {
+            count = (count > temp) ? count : temp;
+            temp = 0;
+        }
+    }
+
+    fclose(f);
+    return count;
+};
+
+String freadall(String fname) {
+
+    if (name == NULL) return 0;
+
+    FILE* f = fopen(fname, "rb");
+    
+    if (f == NULL) return 0;
+
+    String bin = strvoid(2);
+    
+    uint64_t ml = fmaxline(fname) + 2;
+
+    String buff = strvoid(ml);
+
+    while (fgets(buff, ml, f) != NULL) {
+        String temp = strplus(bin, buff);
+        strfree(bin);
+        bin = temp;
+    }
+
+    strfree(buff);
+
+    fclose(f);
+
+    return bin;
+    
+};

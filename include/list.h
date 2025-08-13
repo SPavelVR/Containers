@@ -2,6 +2,8 @@
 #define __LIST_H__SP 1
 
 #include "node.h"
+#include "iterator.h"
+
 #include <stddef.h>
 
 typedef struct List List;
@@ -23,12 +25,14 @@ struct EventsList
     void* (*pop_back)(List* list);
     void* (*pop_index)(List* list, size_t index);
 
+    int (*add) (List* list, void* data, int (*comp) (void*, void*) );
     void* (*remove) (List* list, void* data, int (*comp) (void*, void*));
-
     size_t (*find)(List* list, void* data, int (*comp) (void*, void*));
+    size_t (*count)(List* list, void* data, int (*comp) (void*, void*));
+    void (*sort)(List* list, int (*comp)(void*, void*));
+
     size_t (*size)(List* list);
     void (*func_on)(List* list, void (*func)(void*));
-    void (*sort)(List* list, int (*comp)(void*, void*));
     Iterator* (*get_iterator)(List* list);
 };
 

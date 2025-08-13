@@ -13,17 +13,17 @@ void push_memory_node(Node* node, size_t capacity) {
 }
 
 
-Node* init_node(size_t capacity) {
+Node* init_node() {
     Node* node = malloc(sizeof(Node));
     if (node == NULL) return NULL;
     node->data = NULL;
     node->left = NULL;
     node->right = NULL;
-    if (capacity > 0) push_memory_node(node, capacity - 1);
     return node;
 };
+
 Node* gen_node(Node* left, Node* right) {
-    Node* node = init_node(0);
+    Node* node = init_node();
 
     if (left != NULL)
         left->right = node;
@@ -35,24 +35,19 @@ Node* gen_node(Node* left, Node* right) {
     node->right = right;
     return node;
 };
-void conect_node(Node* left, Node* center, Node* right) {
-    if (center == NULL) return ;
-    if (left != NULL) left->right = center;
-    if (right != NULL) right->left = center;
-
-    center->left = left;
-    center->right = right;
-};
 
 void free_node(Node* node) {
     if (node == NULL) return    ;
-    while (node->right != NULL) node = node->right;
-
+    
     while (node->left != NULL) {
         node = node->left;
-        free(node->right);
     }
-    free(node);
+
+    while (node != NULL) {
+        Node* copy = node->right;
+        free(node);
+        node = copy;
+    }
 };
 
 NodeOne* init_node_one() {

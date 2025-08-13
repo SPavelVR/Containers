@@ -175,6 +175,26 @@ size_t find_linked_list(LinkedList* linked_list, void* data, int (*comp) (void*,
     return (index);
 };
 
+size_t count_linked_list(LinkedList* linked_list, void* data, int (*comp) (void*, void*)) {
+    if (linked_list == NULL || data == NULL) return 0;
+
+    NodeOne* node = linked_list->container;
+    size_t count = 0;
+
+    int (*rcomp)(void*, void*) = comp;
+
+    if (rcomp == NULL) {
+        rcomp = linked_list->comp;
+    }
+
+    while (node != NULL && node->data != NULL && rcomp != NULL) {
+        if (rcomp(node->data, data) == 0) count++;
+        node = node->right;
+    }
+
+    return count;
+};
+
 size_t size_linked_list(LinkedList* linked_list) {
     if (linked_list == NULL) return 0;
     return linked_list->size;
@@ -275,6 +295,18 @@ void* remove_linked_list (LinkedList* linked_list, void* data, int (*comp) (void
     return NULL;
 };
 
+int add_linked_list (LinkedList* linked_list, void* data, int (*comp) (void*, void*)) {
+    if (linked_list == NULL || data == NULL) return 0;
+
+    size_t ind = find_linked_list(linked_list, data, comp);
+
+    if (ind >= size_linked_list(linked_list)) {
+        return push_front_linked_list(linked_list, data);
+    }
+
+    return 0;
+};
+
 LinkedList* init_linked_list(int (*comp) (void*, void*)) {
     LinkedList* linked_list = malloc(sizeof(LinkedList));
 
@@ -301,8 +333,10 @@ LinkedList* init_linked_list(int (*comp) (void*, void*)) {
             events->pop_front = pop_front_linked_list;
             events->pop_index = pop_index_linked_list;
 
+            events->add = add_linked_list;
             events->remove = remove_linked_list;
-
+            events->count = count_linked_list;
+            
             events->find = find_linked_list;
             events->func_on = func_on_linked_list;
             events->size = size_linked_list;

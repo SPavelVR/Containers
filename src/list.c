@@ -12,52 +12,39 @@ void free_list (List* list) {
 };
 
 int push_back_list(List* list, void* data) {
+    
     if (list == NULL || data == NULL) return 0;
+
     if (list->container_end == NULL) {
-        list->container_end = init_node(0);
-        if (list->container_begin == NULL) {
-            list->container_begin = list->container_end;
-        }
+        list->container_end = init_node();
+        list->container_begin = list->container_end;
+    } else {
+        list->container_end = gen_node(list->container_end, NULL);
     }
+
     list->size++;
-    if (list->container_end->data == NULL) {
-        list->container_end->data = data;
-        if (list->container_end->right == NULL) {
-            list->container_end->right = gen_node(list->container_end, NULL);
-        }
-        return 1;
-    }
-    if (list->container_end->right == NULL) {
-        list->container_end->right = gen_node(list->container_end, NULL);
-    }
-    list->container_end = list->container_end->right;
     list->container_end->data = data;
     return 1;
 };
 
 int push_front_list(List* list, void* data) {
     if (list == NULL || data == NULL) return 0;
+
     if (list->container_begin == NULL) {
-        list->container_begin = init_node(0);
-        if (list->container_end == NULL) {
-            list->container_end = list->container_end;
-        }
+        list->container_end = init_node();
+        list->container_begin = list->container_end;
+    } else {
+        list->container_begin = gen_node(NULL, list->container_begin);
     }
+
     list->size++;
-    if (list->container_begin->data == NULL) {
-        list->container_begin->data = data;
-        return 1;
-    }
-    if (list->container_begin->left == NULL) {
-        list->container_begin->left = gen_node(NULL, list->container_begin);
-    }
-    list->container_begin = list->container_begin->left;
     list->container_begin->data = data;
     return 1;
 };
 
 int push_index_list(List* list, void* data, size_t index) {
     if (list == NULL || list->size < index || data == NULL) return 0;
+
     if (index == 0) return push_front_list(list, data);
     if (index == list->size) return push_back_list(list, data);
 
@@ -82,10 +69,12 @@ void* front_list(List* list) {
     if (list == NULL || list->container_begin == NULL) return NULL;
     return list->container_begin->data;
 };
+
 void* back_list(List* list) {
     if (list == NULL || list->container_end == NULL) return NULL;
     return list->container_end->data;
 };
+
 void* index_list(List* list, size_t index) {
     if (list == NULL || list->size <= index) return NULL;
     Node* node = list->container_begin;
@@ -94,40 +83,45 @@ void* index_list(List* list, size_t index) {
         i++;
         node = node->right;
     }
-    if (i == index) return node->data;
+    if (i == index && node != NULL) return node->data;
     return NULL;
 };
 
 void* pop_front_list(List* list) {
-    if (list == NULL || list->container_begin == NULL || list->container_begin->data == NULL) return NULL;
-    
-    void* data = list->container_begin->data;
+    if (list == NULL || list->container_begin == NULL) return NULL;
+
     Node* node = list->container_begin;
     list->container_begin = node->right;
-    if (list->container_begin == NULL) list->container_end = NULL;
-    else if (list->container_end == node)  {
+
+    if (node == list->container_end) 
+        list->container_end = node->right;
+
+    if (list->container_begin != NULL)
         list->container_begin->left = NULL;
-        list->container_end = list->container_begin;
-    }
-    else list->container_begin->left = NULL;
-    list->size--;
+    
     node->right = NULL;
+    
+    list->size--;
+    void* data = node->data;
     free_node(node);
     return data;
 };
 void* pop_back_list(List* list) {
-    if (list == NULL || list->container_end == NULL || list->container_end->data == NULL) return NULL;
+    if (list == NULL || list->container_begin == NULL) return NULL;
 
-    void* data = list->container_end->data;
     Node* node = list->container_end;
     list->container_end = node->left;
-    if (list->container_end == NULL) list->container_begin = NULL;
-    else if (list->container_begin == node) {
+
+    if (node == list->container_begin) 
+        list->container_begin = node->left;
+
+    if (list->container_end != NULL)
         list->container_end->right = NULL;
-        list->container_begin = list->container_end;
-    } else list->container_end->right = NULL;
-    list->size--;
+    
     node->left = NULL;
+    
+    list->size--;
+    void* data = node->data;
     free_node(node);
     return data;
 };
@@ -145,7 +139,7 @@ void* pop_index_list(List* list, size_t index) {
         node = node->right;
     }
 
-    if (i == index && node != NULL) {
+    if (i == index && node != NULL && node->data != NULL) {
 
         void* data = node->data;
 
@@ -163,7 +157,28 @@ void* pop_index_list(List* list, size_t index) {
         list->size--;
         return data;
     }
+
     return NULL;
+};
+
+size_t count_list(List* list, void* data, int (*comp) (void*, void*)) {
+    if (list == NULL || data == NULL) return 0;
+
+    Node* node = list->container_begin;
+    size_t count = 0;
+
+    int (*rcomp)(void*, void*) = comp;
+
+    if (rcomp == NULL) {
+        rcomp = list->comp;
+    }
+
+    while (node != NULL && node->data != NULL && rcomp != NULL) {
+        if (rcomp(node->data, data) == 0) count++;
+        node = node->right;
+    }
+
+    return count;
 };
 
 size_t find_list(List* list, void* data, int (*comp) (void*, void*)) {
@@ -184,12 +199,24 @@ size_t find_list(List* list, void* data, int (*comp) (void*, void*)) {
         index++;
     }
 
-    return (index);
+    return index;
 };
+
+int add_list(List* list, void* data, int (*comp) (void*, void*)) {
+    if (list == NULL || data == NULL) return 0;
+
+    size_t ind = find_list(list, data, comp);
+
+    if (ind >= list->size) return push_back_list(list, data);
+
+    return 0;
+}
+
 size_t size_list(List* list) {
     if (list == NULL) return 0;
     return list->size;
 };
+
 void func_on_list(List* list, void (*func)(void*)) {
     if (list == NULL || list->container_begin == NULL || list->container_begin->data == NULL || func == NULL) return   ;
 
@@ -199,6 +226,7 @@ void func_on_list(List* list, void (*func)(void*)) {
         node = node->right;
     }
 };
+
 void sort_list(List* list, int (*comp)(void*, void*)) {
     if (list == NULL || list->size <= 1) return ;
 
@@ -292,8 +320,10 @@ List* init_list(int (*comp) (void*, void*)) {
             events->pop_front = pop_front_list;
             events->pop_index = pop_index_list;
 
+            events->add = add_list;
             events->remove = remove_list;
 
+            events->count = count_list;
             events->find = find_list;
             events->func_on = func_on_list;
             events->size = size_list;

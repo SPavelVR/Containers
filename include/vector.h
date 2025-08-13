@@ -22,7 +22,11 @@ struct EventsVector
     void* (*pop_back)(Vector* vector);
     void* (*pop_index)(Vector* vector, size_t index);
 
-    size_t (*find)(Vector* vector, void* data, int (*comp) (void*, void*));
+    int (*add) (Vector* vector, void* data, int (*comp) (void*, void*));
+    void* (*remove) (Vector* vector, void* data, int (*comp) (void*, void*));
+    size_t (*count) (Vector* vector, void* data, int (*comp) (void*, void*));
+
+    size_t (*find) (Vector* vector, void* data, int (*comp) (void*, void*));
     size_t (*size)(Vector* vector);
     void (*func_on)(Vector* vector, void (*func)(void*));
     void (*sort)(Vector* vector, int (*comp)(void*, void*));

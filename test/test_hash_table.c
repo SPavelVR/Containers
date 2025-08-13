@@ -130,7 +130,7 @@ void testPopRemove() {
     td_ptr = ht->events->removeKey(ht, &td_f);
 
     AssertExit( td_ptr->num == 9);
-    printf("Start problems\n");
+
     ht->events->free(ht);
     printf("Test \"Pop and Remove\" pass successful\n");
 }

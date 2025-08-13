@@ -186,6 +186,42 @@ Iterator* get_iterator_vector(Vector* vector) {
     return iter;
 };
 
+int add_vector (Vector* vector, void* data, int (*comp) (void*, void*)) {
+    if (vector == NULL || vector->container == NULL || data == NULL) return 0;
+
+    size_t ind = find_vector(vector, data, comp);
+
+    if (ind >= size_vector(vector)) return push_back_vector(vector, data);
+
+    return 0;
+};
+
+void* remove_vector (Vector* vector, void* data, int (*comp) (void*, void*)) {
+    if (vector == NULL || vector->container == NULL || data == NULL) return NULL;
+
+    size_t ind = find_vector(vector, data, comp);
+
+    if (ind < size_vector(vector)) return pop_index_vector(vector, data, ind);
+
+    return NULL;
+};
+
+size_t count_vector (Vector* vector, void* data, int (*comp) (void*, void*)) {
+    if (vector == NULL || vector->container == NULL || data == NULL) return 0;
+
+    size_t count = 0;
+
+    int (*rcomp)(void*, void*) = comp;
+    if (rcomp == NULL) rcomp = vector->comp;
+
+    for (size_t i = 0; i < vector->size && rcomp != NULL; i++)
+    {
+        if (rcomp(vector->container[i], data)) count++;
+    }
+
+    return count;
+};
+
 Vector* init_vector(size_t capacity, int (*comp) (void*, void*)) {
     Vector* vector = malloc(sizeof(Vector));
     if (vector == NULL) return NULL;
@@ -209,6 +245,10 @@ Vector* init_vector(size_t capacity, int (*comp) (void*, void*)) {
             events->pop_back = pop_back_vector;
             events->pop_front = pop_front_vector;
             events->pop_index = pop_index_vector;
+
+            events->add = add_vector;
+            events->remove = remove_vector;
+            events->count = count_vector;
 
             events->find = find_vector;
             events->func_on = func_on_vector;

@@ -150,7 +150,8 @@ int push_hash_table(HashTable* ht, void* data) {
     
     CellHashTable* cell = init_cell_hash_table(ht->hash(data), data);
     
-    int r = ht->containers[cell->key % ht->capacity]->events->push_front(ht->containers[cell->key % ht->capacity], cell);
+    int r = ht->containers[cell->key % ht->capacity]->events->add(ht->containers[cell->key % ht->capacity], cell, NULL);
+
     if (r == 0) {
         free_cell_hash_table(cell);
         return 0;
@@ -159,25 +160,19 @@ int push_hash_table(HashTable* ht, void* data) {
     check_size_hash_table(ht);
     return 1;
 };
+
 void* set_hash_table(HashTable* ht, void* data) {
     if (ht == NULL || ht->capacity == 0 || data == 0) return NULL;
     CellHashTable* cell = init_cell_hash_table(ht->hash(data), data);
     if (getKey_hash_table(ht, data)) {
-        Iterator* iter = ht->containers[cell->key % ht->capacity]->events->get_iterator(ht->containers[cell->key % ht->capacity]);
-
-        for_iterator(iter) {
-            if (comp_hash_key(cell->key, ((CellHashTable*) iter->get_data(iter))->key) == 0) {
-                free(cell);
-                void* old_data = ((CellHashTable*) iter->get_data(iter))->data;
-                if (old_data == data) old_data = NULL;
-                ((CellHashTable*) iter->get_data(iter))->data = data;
-                free(iter);
-                return old_data;
-            }
-        }
-        free(iter);
+        CellHashTable* temp = (CellHashTable*) ht->containers[cell->key % ht->capacity]->events->remove(ht->containers[cell->key % ht->capacity], cell, NULL);
+        void* old_data = temp->data;
+        temp->data = data;
+        ht->containers[cell->key % ht->capacity]->events->add(ht->containers[cell->key % ht->capacity], temp, NULL);
+        free_cell_hash_table(cell);
+        return old_data;
     }
-    int r = ht->containers[cell->key % ht->capacity]->events->push_front(ht->containers[cell->key % ht->capacity], cell);
+    int r = ht->containers[cell->key % ht->capacity]->events->add(ht->containers[cell->key % ht->capacity], cell, NULL);
     if (r == 0) {
         free_cell_hash_table(cell);
         return NULL;
@@ -186,25 +181,22 @@ void* set_hash_table(HashTable* ht, void* data) {
     check_size_hash_table(ht);
     return data;
 };
+
 void* update_hash_table(HashTable* ht, void* data) {
     if (ht == NULL || ht->capacity == 0 || data == 0) return NULL;
-    uint64_t key = ht->hash(data);
+    CellHashTable* cell = init_cell_hash_table(ht->hash(data), data);
     if (getKey_hash_table(ht, data)) {
-        Iterator* iter = ht->containers[key % ht->capacity]->events->get_iterator(ht->containers[key % ht->capacity]);
-
-        for_iterator(iter) {
-            if (comp_hash_key(key, ((CellHashTable*) iter->get_data(iter))->key) == 0) {
-                void* old_data = ((CellHashTable*) iter->get_data(iter))->data;
-                if (old_data == data) old_data = NULL;
-                ((CellHashTable*) iter->get_data(iter))->data = data;
-                free(iter);
-                return old_data;
-            }
-        }
-        free(iter);
+        CellHashTable* temp = (CellHashTable*) ht->containers[cell->key % ht->capacity]->events->remove(ht->containers[cell->key % ht->capacity], cell, NULL);
+        void* old_data = temp->data;
+        temp->data = data;
+        ht->containers[cell->key % ht->capacity]->events->add(ht->containers[cell->key % ht->capacity], temp, NULL);
+        free_cell_hash_table(cell);
+        return old_data;
     }
+    free_cell_hash_table(cell);
     return NULL;
 };
+
 void* pop_hash_table(HashTable* ht) {
     if (ht == NULL || ht->events->size(ht) == 0) return NULL;
 
@@ -220,6 +212,7 @@ void* pop_hash_table(HashTable* ht) {
     }
     return NULL;
 };
+
 size_t size_hash_table(HashTable* ht) {
     if (ht == NULL) return 0;
     return ht->count;

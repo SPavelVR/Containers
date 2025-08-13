@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
+
 #include "list.h"
 #include "util.h"
 
@@ -153,6 +155,10 @@ void testFindList() {
     AssertExit(list->events->find(list, &f_td, NULL) == 1);
     AssertExit(list->events->find(list, &f_td, comp_test_data_char) == 4);
     AssertExit(list->events->find(list, &fe_td, NULL) == list->events->size(list));
+    AssertExit(list->events->add(list, &f_td, NULL) == 0);
+    AssertExit(list->events->size(list) == 5);
+    AssertExit(list->events->add(list, &fe_td, NULL) == 1);
+    AssertExit(list->events->size(list) == 6);
 
     list->events->free(list);
     printf("Test \"Find\" pass successful\n");
@@ -215,7 +221,7 @@ void testSortIteratorList() {
     printf("Test \"Sort and Iter\" pass successful\n");
 }
 
-int test_list_main  (int argc, char** argt) {
+int main  (int argc, char** argt) {
     printf("Start test list\n");
     
     testInitFreeList();

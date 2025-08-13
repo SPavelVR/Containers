@@ -38,7 +38,7 @@ size_t strcount(String dest, String source);
 
 int streql(String str1, String str2);
 
-String strreplace(String dest, String old, String new, int count);
+String strreplace(String dest, String _old, String _new, int count);
 
 uint64_t fsize(String fname);
 

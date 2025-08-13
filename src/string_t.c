@@ -221,16 +221,16 @@ int streql(String str1, String str2) {
     return c;
 };
 
-String strreplace(String dest, String old, String new, int count) {
-    if (dest == NULL || old == NULL || new == NULL) return NULL;
+String strreplace(String dest, String _old, String _new, int count) {
+    if (dest == NULL || _old == NULL || _new == NULL) return NULL;
 
-    size_t c = strcount(dest, old);
+    size_t c = strcount(dest, _old);
     
     if (c == 0) return strinit(dest);
     if (count == 0) count = (int) c;
     
-    size_t osize = strlen(old);
-    size_t nsize = strlen(new);
+    size_t osize = strlen(_old);
+    size_t nsize = strlen(_new);
     size_t mx = (osize > nsize) ? osize : nsize;
     size_t mn = (osize > nsize) ? nsize : osize;
     size_t capacity = strlen(dest) + 1;
@@ -244,37 +244,37 @@ String strreplace(String dest, String old, String new, int count) {
 
     String res = strvoid(capacity);
     String start_rs = res;
-    String start_o = old;
-    String start_n = new;
+    String start_o = _old;
+    String start_n = _new;
 
     while (*dest != '\0') {
 
-        if (*dest == *old) {
-            old++;
+        if (*dest == *_old) {
+            _old++;
         } else {
-            old = start_o;
+            _old = start_o;
         }
 
         *res = *dest;
         dest++;
         res++;
 
-        if (*old == '\0' && (count > 0 || (count < 0 && count + (int) c == 0))) {
+        if (*_old == '\0' && (count > 0 || (count < 0 && count + (int) c == 0))) {
             res -= osize;
 
-            while (*new != '\0') {
-                *res = *new;
+            while (*_new != '\0') {
+                *res = *_new;
                 res++;
-                new++;
+                _new++;
             }
-            old = start_o;
-            new = start_n;
+            _old = start_o;
+            _new = start_n;
             c--;
             if (count > 0)
                 count--;
             if (count < 0)
                 count++;
-        } else if (*old == '\0') {
+        } else if (*_old == '\0') {
             c--;
         }
     }

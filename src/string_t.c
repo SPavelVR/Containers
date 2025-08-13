@@ -314,7 +314,7 @@ uint64_t fmaxline(String fname) {
     char c;
     while ((c = fgetc(f)) != EOF) {
 
-        if (c != '\n' || c != '\0') temp++;
+        if (c != '\n' && c != '\0') temp++;
         else {
             count = (count > temp) ? count : temp;
             temp = 0;

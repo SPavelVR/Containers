@@ -6,7 +6,7 @@
 
 #define check_ptr(ptr__) \
 if ((ptr__) == NULL) {  \
-    printf("\nError in file %s, on line %d, NO MEMERY!!!\n", __FILE__, __LINE__),\
+    printf("\nError in file %s, on line %d, NO MEMORY!!!\n", __FILE__, __LINE__),\
     exit(1);    \
 }
 

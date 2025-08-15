@@ -42,6 +42,8 @@ String strreplace(String dest, String _old, String _new, int count);
 
 uint64_t fsize(String fname);
 
+String fprintall(String fname);
+
 String freadall(String fname);
 
 uint64_t fmaxline(String fname);

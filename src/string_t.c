@@ -7,7 +7,7 @@
 #include "../include/string_t.h"
 
 String strvoid(size_t capacity) {
-    String str = malloc(sizeof(__STRING_TYPE) * capacity);
+    String str = (String) calloc(capacity, sizeof(__STRING_TYPE));
 
     if (str == NULL) return NULL;
 
@@ -289,12 +289,11 @@ uint64_t fsize(String fname) {
     if (fname == NULL) return 0;
 
     FILE* f = fopen(fname, "rb");
-    
     if (f == NULL) return 0;
 
-    uint64_t count = 0;
-
-    while (fgetc(f) != EOF) count++;
+    fseek(f, 0, SEEK_END);
+    uint64_t count = ftell(f);
+    rewind(f);
 
     fclose(f);
     return count;
@@ -325,9 +324,9 @@ uint64_t fmaxline(String fname) {
     return count;
 };
 
-String freadall(String fname) {
+String fprintall(String fname) {
 
-    if (fname == NULL) return 0;
+    if (fname == NULL) return NULL;
 
     FILE* f = fopen(fname, "rb");
     
@@ -351,4 +350,26 @@ String freadall(String fname) {
 
     return bin;
     
+};
+
+String freadall(String fname) {
+    if (fname == NULL) return NULL;
+
+    FILE* file = fopen(fname, "rb");
+    if (!file) return NULL;
+    
+    uint64_t len = fsize(fname);
+    
+    // Выделяем память
+    String buffer = strvoid(len + 1);
+    if (!buffer) {
+        fclose(file);
+        return NULL;
+    }
+    
+    // Читаем файл
+    fread(buffer, 1, len, file);
+    
+    fclose(file);
+    return buffer;
 };

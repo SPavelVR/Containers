@@ -116,10 +116,23 @@ void* pop_index_vector(Vector* vector, size_t index) {
     vector->container[vector->size - 1] = NULL;
     vector->size--;
     return data;
-    
 };
 
-size_t find_vector(Vector* vector, void* data, int (*comp) (void*, void*)) {
+void* find_vector(Vector* vector, void* data, int (*comp) (void*, void*)) {
+    if (vector == NULL || vector->container == NULL || data == NULL) return NULL;
+
+    int (*rcomp)(void*, void*) = comp;
+    if (rcomp == NULL) rcomp = vector->comp;
+
+    for (size_t i = 0; i < vector->size && rcomp != NULL; i++)
+    {
+        if (rcomp(vector->container[i], data)) return vector->container[i];
+    }
+
+    return NULL;
+};
+
+size_t findi_vector(Vector* vector, void* data, int (*comp) (void*, void*)) {
     if (vector == NULL || vector->container == NULL || data == NULL) return 0;
 
     int (*rcomp)(void*, void*) = comp;
@@ -248,9 +261,10 @@ Vector* init_vector(size_t capacity, int (*comp) (void*, void*)) {
 
             events->add = add_vector;
             events->remove = remove_vector;
+            events->find = find_vector;
             events->count = count_vector;
 
-            events->find = find_vector;
+            events->findI = findi_vector;
             events->func_on = func_on_vector;
             events->size = size_vector;
             events->sort = sort_vector;

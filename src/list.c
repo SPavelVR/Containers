@@ -181,7 +181,26 @@ size_t count_list(List* list, void* data, int (*comp) (void*, void*)) {
     return count;
 };
 
-size_t find_list(List* list, void* data, int (*comp) (void*, void*)) {
+void* find_list(List* list, void* data, int (*comp) (void*, void*)) {
+    if (list == NULL || data == NULL) return NULL;
+
+    Node* node = list->container_begin;
+
+    int (*rcomp)(void*, void*) = comp;
+
+    if (rcomp == NULL) {
+        rcomp = list->comp;
+    }
+
+    while (node != NULL && node->data != NULL && rcomp != NULL) {
+        if (rcomp(node->data, data) == 0) return node->data;
+        node = node->right;
+    }
+
+    return NULL;
+};
+
+size_t findi_list(List* list, void* data, int (*comp) (void*, void*)) {
     if (list == NULL || data == NULL) return 0;
 
     Node* node = list->container_begin;
@@ -322,9 +341,10 @@ List* init_list(int (*comp) (void*, void*)) {
 
             events->add = add_list;
             events->remove = remove_list;
+            events->find = find_list;
 
             events->count = count_list;
-            events->find = find_list;
+            events->findI = findi_list;
             events->func_on = func_on_list;
             events->size = size_list;
             events->sort = sort_list;

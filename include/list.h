@@ -27,7 +27,8 @@ struct EventsList
 
     int (*add) (List* list, void* data, int (*comp) (void*, void*) );
     void* (*remove) (List* list, void* data, int (*comp) (void*, void*));
-    size_t (*find)(List* list, void* data, int (*comp) (void*, void*));
+    void* (*find)(List* list, void* data, int (*comp) (void*, void*));
+    size_t (*findI)(List* list, void* data, int (*comp) (void*, void*));
     size_t (*count)(List* list, void* data, int (*comp) (void*, void*));
     void (*sort)(List* list, int (*comp)(void*, void*));
 

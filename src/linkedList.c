@@ -154,7 +154,26 @@ void* pop_back_linked_list(LinkedList* linked_list) {
     return pop_index_linked_list(linked_list, linked_list->size - 1);
 };
 
-size_t find_linked_list(LinkedList* linked_list, void* data, int (*comp) (void*, void*)) {
+void* find_list(LinkedList* list, void* data, int (*comp) (void*, void*)) {
+    if (list == NULL || data == NULL) return NULL;
+
+    NodeOne* node = list->container;
+
+    int (*rcomp)(void*, void*) = comp;
+
+    if (rcomp == NULL) {
+        rcomp = list->comp;
+    }
+
+    while (node != NULL && node->data != NULL && rcomp != NULL) {
+        if (rcomp(node->data, data) == 0) return node->data;
+        node = node->right;
+    }
+
+    return NULL;
+};
+
+size_t findi_linked_list(LinkedList* linked_list, void* data, int (*comp) (void*, void*)) {
     if (linked_list == NULL || data == NULL) return 0;
 
     NodeOne* node = linked_list->container;
@@ -337,7 +356,7 @@ LinkedList* init_linked_list(int (*comp) (void*, void*)) {
             events->remove = remove_linked_list;
             events->count = count_linked_list;
             
-            events->find = find_linked_list;
+            events->findI = findi_linked_list;
             events->func_on = func_on_linked_list;
             events->size = size_linked_list;
             events->sort = sort_linked_list;

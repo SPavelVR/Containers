@@ -27,7 +27,8 @@ struct EventsLinkedList
 
     int (*add) (LinkedList* list, void* data, int (*comp) (void*, void*));
     void* (*remove) (LinkedList* list, void* data, int (*comp) (void*, void*));
-    size_t (*find)(LinkedList* list, void* data, int (*comp) (void*, void*));
+    void* (*find)(LinkedList* list, void* data, int (*comp) (void*, void*));
+    size_t (*findI)(LinkedList* list, void* data, int (*comp) (void*, void*));
     size_t (*count)(LinkedList* list, void* data, int (*comp) (void*, void*));
     void (*sort)(LinkedList* list, int (*comp)(void*, void*));
 
